@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シェ・デュモン | 岐阜県瑞穂市のパティスリー</title>
+    <meta name="description" content="岐阜県瑞穂市で愛されるパティスリー「シェ・デュモン」。こだわりのシュークリームや季節のケーキをご用意しております。">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A3525',    /* 焦げ茶色（テキスト・ヘッダー） */
+                        secondary: '#D4A373',  /* ゴールド/キャラメル（アクセント） */
+                        accent: '#E86A33',     /* 温かみのあるオレンジ */
+                        bgBase: '#FDFBF7',     /* アイボリー（背景） */
+                        bgSub: '#F4EFEA'       /* 薄いベージュ */
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                        serif: ['"Noto Serif JP"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* カスタムCSS（Tailwindで補えないアニメーション等） */
+        body {
+            background-color: #FDFBF7;
+            color: #4A3525;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* スクロールエフェクト */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ファーストビューのスライダー */
+        .hero-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+
+        /* スクロールダウンインジケーター */
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: bounce 2s infinite;
+            color: #4A3525;
+            z-index: 10;
+        }
+        .scroll-down::after {
+            content: '';
+            width: 1px;
+            height: 40px;
+            background-color: #4A3525;
+            margin-top: 8px;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+            40% { transform: translate(-50%, -10px); }
+            60% { transform: translate(-50%, -5px); }
+        }
+
+        /* 画像ホバーエフェクト */
+        .img-zoom {
+            overflow: hidden;
+        }
+        .img-zoom img {
+            transition: transform 0.5s ease;
+        }
+        .img-zoom:hover img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="font-sans">
+
+    <!-- ① ヘッダー -->
+    <header class="fixed w-full top-0 left-0 bg-bgBase/95 backdrop-blur-sm shadow-sm z-50 py-4 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <!-- 店舗名 -->
+            <a href="#" class="font-serif text-2xl font-bold tracking-wider text-primary">
+                Chez Dumont
+                <span class="block text-xs font-sans tracking-normal mt-1 text-gray-500">シェ・デュモン</span>
+            </a>
+            
+            <!-- PCナビゲーション -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#about" class="text-sm font-medium hover:text-secondary transition-colors">店舗紹介</a>
+                <a href="#menu" class="text-sm font-medium hover:text-secondary transition-colors">人気メニュー</a>
+                <a href="#reasons" class="text-sm font-medium hover:text-secondary transition-colors">選ばれる理由</a>
+                <a href="#access" class="text-sm font-medium hover:text-secondary transition-colors">アクセス</a>
+                <a href="#reserve" class="text-sm font-medium bg-primary text-white px-5 py-2 rounded-full hover:bg-secondary transition-colors">ご予約</a>
+            </nav>
+
+            <!-- スマホメニューボタン -->
+            <button id="mobile-menu-btn" class="md:hidden text-primary focus:outline-none" aria-label="メニューを開く">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- スマホナビゲーション (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-bgBase absolute w-full left-0 top-full shadow-md border-t border-gray-100">
+            <nav class="flex flex-col px-4 pt-2 pb-6 space-y-4 text-center">
+                <a href="#about" class="block text-base font-medium py-2">店舗紹介</a>
+                <a href="#menu" class="block text-base font-medium py-2">人気メニュー</a>
+                <a href="#reasons" class="block text-base font-medium py-2">選ばれる理由</a>
+                <a href="#access" class="block text-base font-medium py-2">アクセス</a>
+                <a href="#reserve" class="block text-base font-medium text-secondary py-2">ご予約</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ② ファーストビュー -->
+    <main>
+        <section class="relative w-full h-screen flex flex-col md:flex-row pt-20 md:pt-0">
+            <!-- キャッチコピーエリア (Text: 40-50%) -->
+            <div class="w-full md:w-1/2 h-1/2 md:h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 bg-bgBase z-10">
+                <h1 class="font-serif text-3xl md:text-5xl lg:text-6xl leading-tight text-primary font-bold mb-6">
+                    一口で笑顔ほころぶ、<br>
+                    瑞穂の小さなフランス。
+                </h1>
+                <p class="text-gray-600 leading-relaxed mb-8 text-sm md:text-base">
+                    素材の声に耳を澄まし、<br class="hidden md:block">
+                    ひとつひとつ丁寧に焼き上げるお菓子たち。<br>
+                    あなたの日常に、特別な甘いひとときを。
+                </p>
+            </div>
+            
+            <!-- スライダーエリア (Images: 50-60%) -->
+            <div class="w-full md:w-1/2 h-1/2 md:h-full relative">
+                <div class="hero-slider">
+                    <!-- 料理・店内・外観の3枚 -->
+                    <div class="slide active" style="background-image: url('photo1.jpg');" aria-label="美味しいケーキの画像"></div>
+                    <div class="slide" style="background-image: url('photo2.jpg');" aria-label="温かみのある店内の画像"></div>
+                    <div class="slide" style="background-image: url('photo3.jpg');" aria-label="シェ・デュモンの外観画像"></div>
+                </div>
+            </div>
+
+            <!-- スクロール誘導 -->
+            <div class="scroll-down hidden md:flex font-serif text-xs tracking-widest">
+                SCROLL
+            </div>
+        </section>
+
+        <!-- Instagram誘導セクション -->
+        <section class="bg-bgSub py-8">
+            <div class="max-w-4xl mx-auto px-4 text-center fade-up">
+                <p class="text-lg font-medium text-primary mb-4">
+                    <i class="fab fa-instagram text-secondary mr-2 text-xl"></i> 最新情報はInstagramで発信しています
+                </p>
+                <a href="https://www.instagram.com/explore/tags/シェデュモン/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-primary text-white px-8 py-3 rounded-full hover:bg-secondary transition-colors font-medium shadow-md">
+                    Instagramを見る <i class="fas fa-external-link-alt ml-2 text-sm"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- ③ 店舗紹介 -->
+        <section id="about" class="py-24 bg-bgBase">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="w-full md:w-1/2 fade-up">
+                        <div class="img-zoom rounded-t-full rounded-b-md shadow-xl">
+                            <img src="photo10.jpg" alt="パティシエがケーキを作っている様子" class="w-full h-auto object-cover aspect-[3/4]">
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 fade-up delay-100">
+                        <span class="text-secondary font-serif tracking-widest text-sm font-bold uppercase mb-2 block">Concept</span>
+                        <h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-6">地元で愛され続ける<br>本格パティスリー</h2>
+                        
+                        <!-- AIが考えた紹介文 -->
+                        <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
+                            <p>岐阜県瑞穂市で長年、多くのお客様に親しまれている「シェ・デュモン」。当店が大切にしているのは、日常のちょっとしたご褒美から特別な日のお祝いまで、どんなシーンにも寄り添えるお菓子作りです。</p>
+                            <p>看板メニューである「シュークリーム」は、香ばしく焼き上げたサクサクの生地と、バニラビーンズが香る濃厚で上品なカスタードクリームの絶妙なバランスが特徴。お子様からご年配の方まで、幅広い世代にご支持いただいております。</p>
+                            <p>木の温もりを感じるクラシックな店内には、季節のフルーツをふんだんに使った色鮮やかなケーキや、手土産に喜ばれる焼き菓子が並びます。スタッフの温かく丁寧な接客とともに、皆様のご来店を心よりお待ちしております。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ④ 人気メニュー -->
+        <section id="menu" class="py-24 bg-bgSub">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 fade-up">
+                    <span class="text-secondary font-serif tracking-widest text-sm font-bold uppercase mb-2 block">Menu</span>
+                    <h2 class="font-serif text-3xl md:text-4xl text-primary font-bold">人気のスイーツ</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- メニュー1 -->
+                    <article class="bg-bgBase rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow fade-up">
+                        <div class="img-zoom h-64">
+                            <img src="photo4.jpg" alt="窯出しシュークリーム" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="font-serif text-xl text-primary font-bold mb-2">窯出しシュークリーム</h3>
+                            <p class="text-gray-600 text-sm">注文を受けてからクリームを詰める、サクサク生地と濃厚カスタードの極上ハーモニー。当店の圧倒的一番人気です。</p>
+                        </div>
+                    </article>
+                    <!-- メニュー2 -->
+                    <article class="bg-bgBase rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow fade-up delay-100">
+                        <div class="img-zoom h-64">
+                            <img src="photo5.jpg" alt="季節のフルーツタルト" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="font-serif text-xl text-primary font-bold mb-2">季節のフルーツタルト</h3>
+                            <p class="text-gray-600 text-sm">サクッと香ばしいタルト台に、旬の瑞々しいフルーツをたっぷりと乗せました。季節ごとに変わる味わいをお楽しみください。</p>
+                        </div>
+                    </article>
+                    <!-- メニュー3 -->
+                    <article class="bg-bgBase rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow fade-up delay-200">
+                        <div class="img-zoom h-64">
+                            <img src="photo6.jpg" alt="焼き菓子アソート" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="font-serif text-xl text-primary font-bold mb-2">特製・焼き菓子ギフト</h3>
+                            <p class="text-gray-600 text-sm">発酵バターの香りが広がるマドレーヌやフィナンシェ。ちょっとした手土産からご挨拶の品まで、幅広く選ばれています。</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⑤ 選ばれる理由 -->
+        <section id="reasons" class="py-24 bg-bgBase">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 fade-up">
+                    <span class="text-secondary font-serif tracking-widest text-sm font-bold uppercase mb-2 block">Reason</span>
+                    <h2 class="font-serif text-3xl md:text-4xl text-primary font-bold">シェ・デュモンが選ばれる理由</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <!-- 理由1 -->
+                    <div class="text-center fade-up">
+                        <div class="w-20 h-20 mx-auto bg-bgSub rounded-full flex items-center justify-center mb-6 text-secondary text-3xl shadow-sm">
+                            <i class="fas fa-egg"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-primary font-bold mb-4">妥協のない厳選素材</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">新鮮な地元の卵や、香り高い高級バター、産地指定の生クリームなど、本当に美味しいと納得した素材だけを使用しています。</p>
+                    </div>
+                    <!-- 理由2 -->
+                    <div class="text-center fade-up delay-100">
+                        <div class="w-20 h-20 mx-auto bg-bgSub rounded-full flex items-center justify-center mb-6 text-secondary text-3xl shadow-sm">
+                            <i class="fas fa-birthday-cake"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-primary font-bold mb-4">熟練の技と手作りへのこだわり</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">生地の仕込みから焼き上げ、デコレーションに至るまで、熟練のパティシエが一つひとつ丁寧に手作業で仕上げています。</p>
+                    </div>
+                    <!-- 理由3 -->
+                    <div class="text-center fade-up delay-200">
+                        <div class="w-20 h-20 mx-auto bg-bgSub rounded-full flex items-center justify-center mb-6 text-secondary text-3xl shadow-sm">
+                            <i class="fas fa-smile-beam"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-primary font-bold mb-4">心温まるおもてなし</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">お客様の特別な日を彩るお手伝いができるよう、商品選びのご相談など、笑顔で丁寧な接客を心掛けております。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⑥ 店内写真エリア -->
+        <section class="py-12 bg-primary">
+            <div class="max-w-full mx-auto flex flex-col md:flex-row gap-2">
+                <div class="w-full md:w-1/3 h-64 md:h-80 img-zoom fade-up">
+                    <img src="photo7.jpg" alt="ショーケースに並ぶケーキ" class="w-full h-full object-cover">
+                </div>
+                <div class="w-full md:w-1/3 h-64 md:h-80 img-zoom fade-up delay-100">
+                    <img src="photo8.jpg" alt="落ち着いた雰囲気の店内" class="w-full h-full object-cover">
+                </div>
+                <div class="w-full md:w-1/3 h-64 md:h-80 img-zoom fade-up delay-200">
+                    <img src="photo9.jpg" alt="綺麗に包装された焼き菓子コーナー" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+
+        <!-- ⑦ お客様の声 -->
+        <section id="reviews" class="py-24 bg-bgSub">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 fade-up">
+                    <span class="text-secondary font-serif tracking-widest text-sm font-bold uppercase mb-2 block">Voice</span>
+                    <h2 class="font-serif text-3xl md:text-4xl text-primary font-bold">お客様の声</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 口コミ1 -->
+                    <div class="bg-bgBase p-8 rounded-lg shadow-sm relative fade-up">
+                        <i class="fas fa-quote-left text-3xl text-gray-200 absolute top-4 left-4"></i>
+                        <div class="flex text-secondary text-sm mb-4 justify-center">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 text-sm leading-relaxed text-center z-10 relative">
+                            「看板メニューのシュークリームは、サクサクの生地と甘さ控えめなクリームの相性が抜群で、何度食べても飽きない美味しさです。手土産に持っていくと必ず喜ばれます。」
+                        </p>
+                        <p class="text-right mt-4 text-xs text-gray-500">- 30代 女性</p>
+                    </div>
+                    <!-- 口コミ2 -->
+                    <div class="bg-bgBase p-8 rounded-lg shadow-sm relative fade-up delay-100">
+                        <i class="fas fa-quote-left text-3xl text-gray-200 absolute top-4 left-4"></i>
+                        <div class="flex text-secondary text-sm mb-4 justify-center">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 text-sm leading-relaxed text-center z-10 relative">
+                            「記念日や家族の誕生日のケーキはいつもこちらでお願いしています。見た目も華やかで美しく、スポンジもフワフワ。家族みんなが大好きな、間違いない味です。」
+                        </p>
+                        <p class="text-right mt-4 text-xs text-gray-500">- 40代 男性</p>
+                    </div>
+                    <!-- 口コミ3 -->
+                    <div class="bg-bgBase p-8 rounded-lg shadow-sm relative fade-up delay-200">
+                        <i class="fas fa-quote-left text-3xl text-gray-200 absolute top-4 left-4"></i>
+                        <div class="flex text-secondary text-sm mb-4 justify-center">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star text-gray-300"></i>
+                        </div>
+                        <p class="text-gray-700 text-sm leading-relaxed text-center z-10 relative">
+                            「スタッフの方の対応がとても丁寧で、いつも気持ちよく買い物ができます。焼き菓子の種類も豊富なので、予算に合わせたギフト選びにも重宝しています。」
+                        </p>
+                        <p class="text-right mt-4 text-xs text-gray-500">- 50代 女性</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⑧ 店舗情報・アクセス & ⑨ ご予約 -->
+        <section id="access" class="py-24 bg-bgBase border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row gap-12">
+                    <!-- 店舗情報 -->
+                    <div class="w-full lg:w-1/2 fade-up">
+                        <span class="text-secondary font-serif tracking-widest text-sm font-bold uppercase mb-2 block">Information</span>
+                        <h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-8">店舗情報・アクセス</h2>
+                        
+                        <table class="w-full text-left border-collapse text-gray-700 mb-8">
+                            <tbody>
+                                <tr class="border-b border-gray-200">
+                                    <th class="py-4 font-medium w-32 align-top">店舗名</th>
+                                    <td class="py-4">シェ・デュモン（Chez Dumont）</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <th class="py-4 font-medium align-top">住所</th>
+                                    <td class="py-4">〒501-0200<br>岐阜県瑞穂市（※Googleマップをご参照ください）</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <th class="py-4 font-medium align-top">営業時間</th>
+                                    <td class="py-4">10:00 〜 19:00<br><span class="text-xs text-gray-500">※売り切れ次第終了となる場合がございます。</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <th class="py-4 font-medium align-top">定休日</th>
+                                    <td class="py-4">水曜日（※祝日の場合は営業、翌日休み）</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <th class="py-4 font-medium align-top">駐車場</th>
+                                    <td class="py-4">完備（店舗前および専用駐車場あり）</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- ⑨ ご予約 -->
+                        <div id="reserve" class="bg-bgSub p-8 rounded-lg text-center shadow-sm">
+                            <h3 class="font-serif text-xl text-primary font-bold mb-2">ご予約・お問い合わせ</h3>
+                            <p class="text-sm text-gray-600 mb-4">ホールケーキのご予約はお電話にて承っております。</p>
+                            <a href="tel:0583270000" class="inline-block text-3xl font-bold text-primary hover:text-secondary transition-colors">
+                                <i class="fas fa-phone-alt text-xl mr-2"></i>058-327-XXXX
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Google Map -->
+                    <div class="w-full lg:w-1/2 h-96 lg:h-auto min-h-[400px] bg-gray-200 rounded-lg overflow-hidden fade-up shadow-md">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3253.9482813132!2d136.6859!3d35.395!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDIzJzQyLjAiTiAxMzbCsDQxJzA5LjIiRQ!5e0!3m2!1sja!2sjp!4v1700000000000!5m2!1sja!2sjp" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="シェ・デュモンのGoogleマップ位置情報"
+                            aria-label="Google Map表示">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ⑩ フッター -->
+    <footer class="bg-primary text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center">
+            <h2 class="font-serif text-2xl font-bold tracking-wider mb-6">Chez Dumont</h2>
+            <a href="https://www.instagram.com/explore/tags/シェデュモン/" target="_blank" rel="noopener noreferrer" class="text-2xl hover:text-secondary transition-colors mb-6" aria-label="Instagramアカウント">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <p class="text-xs text-gray-400">&copy; 2026 Chez Dumont. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // スムーススクロール
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        const headerHeight = document.querySelector('header').offsetHeight;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - headerHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                        // スマホメニューが開いていれば閉じる
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // モバイルメニューのトグル
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // ファーストビューのスライダー処理
+            const slides = document.querySelectorAll('.slide');
+            let currentSlide = 0;
+
+            function nextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            // 4秒ごとにスライド切り替え
+            setInterval(nextSlide, 4000);
+
+            // スクロール時のフェードインエフェクト（Intersection Observer）
+            const fadeElements = document.querySelectorAll('.fade-up');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // 一度発火したら監視を解除
+                    }
+                });
+            }, observerOptions);
+
+            fadeElements.forEach(el => {
+                observer.observe(el);
+            });
+
+            // スクロール時のヘッダーのシャドウ付与
+            const header = document.querySelector('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 10) {
+                    header.classList.add('shadow-md');
+                    header.classList.remove('shadow-sm');
+                } else {
+                    header.classList.remove('shadow-md');
+                    header.classList.add('shadow-sm');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
